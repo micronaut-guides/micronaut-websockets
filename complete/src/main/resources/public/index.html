@@ -1,0 +1,70 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+
+    <script type = "text/javascript">
+        var ws;
+        if ("WebSocket" in window) {
+            console.log("WebSocket is supported by your Browser!");
+            var apiKey = location.search.split('apiKey=')[1]
+            apiKey = 'XXX'; // TODO remove this
+            // Let us open a web socket
+            ws = new WebSocket("ws://localhost:8080/ws/users?apiKey="+apiKey);
+
+            ws.onopen = function() {
+
+                // Web Socket is connected, send data using send()
+                //ws.send("Message to send");
+                console.log("websocket connected");
+                document.getElementById("connection").setAttribute('class', 'green');
+            };
+
+            ws.onmessage = function (evt) {
+                console.log("Message is received..." + evt.data);
+                var el = document.getElementById("userCounter");
+                el.innerText = evt.data;
+            };
+
+            ws.onclose = function() {
+                // websocket is closed.
+                document.getElementById("connection").setAttribute('class', 'red');
+                console.log("Connection is closed...");
+            };
+
+            window.setInterval(function(){
+                ws.send("ping");
+            }, 5000);
+
+        } else {
+
+            // The browser doesn't support WebSocket
+            console.log("WebSocket NOT supported by your Browser!");
+        }
+
+
+    </script>
+    <style type="text/css">
+        .gray, .red, .green { padding: 5px; }
+        .green {
+            background-color: green;
+            color: white;
+        }
+        .red {
+            background-color: red;
+            color: white;
+        }
+        .gray {
+            background-color: gray;
+            color: white;
+        }
+    </style>
+
+</head>
+
+<body>
+<div>
+    <h2 id="connection" class="gray">Connection</h2>
+    <h1>Users <span id="userCounter"></span></h1>
+</div>
+</body>
+</html>
